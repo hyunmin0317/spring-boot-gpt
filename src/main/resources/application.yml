@@ -16,3 +16,8 @@ management:
   info:
     git:
       mode: full
+
+openai:
+  api:
+    url: https://api.openai.com/v1/chat/completions
+    key: ${OPENAI_API_KEY}
