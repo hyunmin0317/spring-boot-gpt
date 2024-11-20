@@ -26,7 +26,7 @@ import java.util.UUID;
 public class ChatService {
 
     private final WebClient webClient;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     public Flux<String> streamChat(ChatRequestDto request) {
         String sessionId = UUID.randomUUID().toString();
