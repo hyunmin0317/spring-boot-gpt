@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyunmin.gpt.domain.chat.dto.AnswerDto;
-import com.hyunmin.gpt.domain.chat.dto.ChatRequest;
-import com.hyunmin.gpt.domain.chat.dto.ChatResponse;
+import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
+import com.hyunmin.gpt.domain.chat.dto.ChatResponseDto;
 import com.hyunmin.gpt.global.exception.GeneralException;
 import com.hyunmin.gpt.global.exception.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ChatService {
     private final WebClient webClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Flux<String> streamChat(ChatRequest request) {
+    public Flux<String> streamChat(ChatRequestDto request) {
         String sessionId = UUID.randomUUID().toString();
         AnswerDto answerDto = AnswerDto.from("");
 
@@ -65,7 +65,7 @@ public class ChatService {
                 // TODO 답변 저장 로직 추가
                 log.info("Save answer: {}", answerDto.getAnswer());
             }
-            return objectMapper.writeValueAsString(ChatResponse.of(sessionId, content, finishReason));
+            return objectMapper.writeValueAsString(ChatResponseDto.of(sessionId, content, finishReason));
         } catch (JsonProcessingException ex) {
             log.error("[ERROR] {} : {}", ex.getClass(), ex.getMessage(), ex);
             return null;

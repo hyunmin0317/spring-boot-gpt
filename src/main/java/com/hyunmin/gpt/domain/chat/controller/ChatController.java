@@ -1,6 +1,6 @@
 package com.hyunmin.gpt.domain.chat.controller;
 
-import com.hyunmin.gpt.domain.chat.dto.ChatRequest;
+import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
 import com.hyunmin.gpt.domain.chat.service.ChatService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> streamChat(@RequestBody @Valid ChatRequest request) {
+    public Flux<String> streamChat(@RequestBody @Valid ChatRequestDto request) {
         return chatService.streamChat(request);
     }
 }
