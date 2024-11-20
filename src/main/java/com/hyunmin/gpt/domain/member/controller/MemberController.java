@@ -48,7 +48,7 @@ public class MemberController {
 
     @PutMapping("/me")
     public ResponseEntity<MemberInfoResponseDto> changePassword(@AuthMember Long memberId,
-                                                                @Valid @RequestBody ChangePasswordRequestDto requestDto) {
+                                                                @RequestBody @Valid ChangePasswordRequestDto requestDto) {
         MemberInfoResponseDto responseDto = memberCommandService.changePassword(memberId, requestDto);
         return ResponseEntity.ok(responseDto);
     }

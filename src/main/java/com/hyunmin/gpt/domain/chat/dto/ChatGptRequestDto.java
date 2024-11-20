@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record ChatGptRequest(
+public record ChatGptRequestDto(
         String model,
         boolean stream,
         List<Message> messages
@@ -22,8 +22,8 @@ public record ChatGptRequest(
         }
     }
 
-    public static ChatGptRequest from(List<Message> messages) {
-        return ChatGptRequest.builder()
+    public static ChatGptRequestDto from(List<Message> messages) {
+        return ChatGptRequestDto.builder()
                 .model("gpt-3.5-turbo-0125")
                 .stream(true)
                 .messages(messages)
