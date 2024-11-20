@@ -23,6 +23,7 @@ public class ChatController {
     public ResponseEntity<Flux<String>> streamChat(@RequestBody @Valid ChatRequestDto request) {
         Flux<String> responseFlux = chatService.streamChat(request);
         return ResponseEntity.ok()
+                .header("X-Accel-Buffering", "no")
                 .body(responseFlux);
     }
 }
