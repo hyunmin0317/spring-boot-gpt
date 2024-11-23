@@ -18,7 +18,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Flux;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -28,8 +27,7 @@ public class ChatGptService {
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
 
-    public Flux<String> streamChat(ChatRequestDto request) {
-        String chatId = UUID.randomUUID().toString();
+    public Flux<String> streamChat(String chatId, ChatRequestDto request) {
         MessageRequestDto messageRequestDto = MessageRequestDto.from(chatId);
 
         return webClient.post()
