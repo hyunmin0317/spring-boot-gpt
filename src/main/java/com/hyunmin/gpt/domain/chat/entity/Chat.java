@@ -13,7 +13,7 @@ public class Chat {
     @Id
     @Column(name = "chat_id")
     @GeneratedValue(strategy = GenerationType.UUID)
-    private Long id;
+    private String id;
 
     @Column(nullable = false)
     private String name;
