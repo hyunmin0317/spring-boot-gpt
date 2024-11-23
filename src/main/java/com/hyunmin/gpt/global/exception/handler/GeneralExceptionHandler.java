@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.RedisSystemException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -50,6 +51,14 @@ public class GeneralExceptionHandler {
     protected ResponseEntity<ErrorResponse<Void>> handleHandlerMethodValidationException(HandlerMethodValidationException ex) {
         log.warn("[WARNING] {} : {}", ex.getClass(), ex.getMessage());
         ErrorCode errorCode = extractErrorCode(ex);
+        return ErrorResponse.handle(errorCode);
+    }
+
+    // 지원되지 않는 HTTP 메서드 요청(HttpRequestMethodNotSupportedException) 처리 메서드
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    protected ResponseEntity<ErrorResponse<Void>> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+        log.warn("[WARNING] {} : {}", ex.getClass(), ex.getMessage());
+        ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
         return ErrorResponse.handle(errorCode);
     }
 
