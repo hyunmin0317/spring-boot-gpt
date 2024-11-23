@@ -1,19 +1,25 @@
 package com.hyunmin.gpt.domain.chat.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
 @Builder
-public record ChatResponseDto(
-        String sessionId,
-        String answer,
-        String finishReason
-) {
+@AllArgsConstructor
+@NoArgsConstructor
+public class ChatResponseDto {
 
-    public static ChatResponseDto of(String sessionId, String answer, String finishReason) {
+    private String content;
+
+    public void addContent(String content) {
+        this.content += content;
+    }
+
+    public static ChatResponseDto from(String content) {
         return ChatResponseDto.builder()
-                .sessionId(sessionId)
-                .answer(answer)
-                .finishReason(finishReason)
+                .content(content)
                 .build();
     }
 }
