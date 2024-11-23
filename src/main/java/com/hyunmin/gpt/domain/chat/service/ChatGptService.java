@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyunmin.gpt.domain.chat.dto.ChatGptResponseDto;
 import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
-import com.hyunmin.gpt.domain.chat.dto.ChatResponseDto;
+import com.hyunmin.gpt.domain.chat.dto.MessageRequestDto;
 import com.hyunmin.gpt.global.exception.GeneralException;
 import com.hyunmin.gpt.global.exception.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -30,19 +30,19 @@ public class ChatGptService {
 
     public Flux<String> streamChat(ChatRequestDto request) {
         String chatId = UUID.randomUUID().toString();
-        ChatResponseDto chatResponseDto = ChatResponseDto.from("");
+        MessageRequestDto messageRequestDto = MessageRequestDto.from(chatId);
 
         return webClient.post()
                 .bodyValue(request.toRequest())
                 .accept(MediaType.TEXT_EVENT_STREAM)
-                .exchangeToFlux(response -> handleResponse(response, chatId, chatResponseDto))
+                .exchangeToFlux(response -> handleResponse(response, chatId, messageRequestDto))
                 .onErrorResume(WebClientResponseException.class, this::handleWebClientException);
     }
 
-    private Flux<String> handleResponse(ClientResponse response, String chatId, ChatResponseDto chatResponseDto) {
+    private Flux<String> handleResponse(ClientResponse response, String chatId, MessageRequestDto messageRequestDto) {
         if (response.statusCode().is2xxSuccessful()) {
             return response.bodyToFlux(String.class)
-                    .mapNotNull(originalResponse -> processResponse(originalResponse, chatId, chatResponseDto))
+                    .mapNotNull(originalResponse -> processResponse(originalResponse, chatId, messageRequestDto))
                     .filter(Objects::nonNull);
         } else {
             log.error("[ERROR] {} : {}", "GPT API response statusCode", response.statusCode());
@@ -50,7 +50,7 @@ public class ChatGptService {
         }
     }
 
-    private String processResponse(String originalResponse, String chatId, ChatResponseDto chatResponseDto) {
+    private String processResponse(String originalResponse, String chatId, MessageRequestDto messageRequestDto) {
         try {
             if ("[DONE]".equals(originalResponse)) {
                 return objectMapper.writeValueAsString(originalResponse);
@@ -60,10 +60,10 @@ public class ChatGptService {
             String content = extractContent(jsonNode);
             String finishReason = extractFinishReason(jsonNode);
 
-            chatResponseDto.addContent(content);
+            messageRequestDto.addContent(content);
             if (isFinalResponse(finishReason)) {
                 // TODO 답변 저장 로직 추가
-                log.info("Save Chat Response: {}", chatResponseDto);
+                log.info("Save Message: {}", messageRequestDto);
             }
             return objectMapper.writeValueAsString(ChatGptResponseDto.of(chatId, content, finishReason));
         } catch (JsonProcessingException ex) {
