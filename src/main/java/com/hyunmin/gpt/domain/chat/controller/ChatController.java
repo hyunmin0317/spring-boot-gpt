@@ -1,7 +1,7 @@
 package com.hyunmin.gpt.domain.chat.controller;
 
 import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
-import com.hyunmin.gpt.domain.chat.service.ChatService;
+import com.hyunmin.gpt.domain.chat.service.ChatGptService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -17,11 +17,11 @@ import reactor.core.publisher.Flux;
 @RequestMapping("/api/v1/chat")
 public class ChatController {
 
-    private final ChatService chatService;
+    private final ChatGptService chatGptService;
 
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<Flux<String>> streamChat(@RequestBody @Valid ChatRequestDto request) {
-        Flux<String> responseFlux = chatService.streamChat(request);
+        Flux<String> responseFlux = chatGptService.streamChat(request);
         return ResponseEntity.ok()
                 .header("X-Accel-Buffering", "no")
                 .body(responseFlux);

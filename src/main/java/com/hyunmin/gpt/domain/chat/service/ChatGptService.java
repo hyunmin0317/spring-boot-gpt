@@ -23,7 +23,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ChatService {
+public class ChatGptService {
 
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
