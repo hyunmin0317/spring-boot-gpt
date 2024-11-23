@@ -1,5 +1,6 @@
 package com.hyunmin.gpt.domain.chat.entity;
 
+import com.hyunmin.gpt.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class Chat {
+public class Chat extends BaseEntity {
 
     @Id
     @Column(name = "chat_id")
