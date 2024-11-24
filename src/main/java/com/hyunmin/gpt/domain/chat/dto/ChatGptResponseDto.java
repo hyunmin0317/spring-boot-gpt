@@ -5,15 +5,13 @@ import lombok.Builder;
 @Builder
 public record ChatGptResponseDto(
         String chatId,
-        String content,
-        String finishReason
+        String content
 ) {
 
-    public static ChatGptResponseDto of(String chatId, String content, String finishReason) {
+    public static ChatGptResponseDto of(String chatId, String content) {
         return ChatGptResponseDto.builder()
                 .chatId(chatId)
                 .content(content)
-                .finishReason(finishReason)
                 .build();
     }
 }

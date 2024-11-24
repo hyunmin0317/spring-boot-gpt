@@ -34,7 +34,8 @@ public class ChatGptService {
                 .bodyValue(request)
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchangeToFlux(response -> handleResponse(response, chatId, messageRequestDto))
-                .onErrorResume(WebClientResponseException.class, this::handleWebClientException);
+                .onErrorResume(WebClientResponseException.class, this::handleWebClientException)
+                .doOnComplete(() -> saveMessageContent(messageRequestDto));
     }
 
     private Flux<String> handleResponse(ClientResponse response, String chatId, MessageRequestDto messageRequestDto) {
@@ -54,38 +55,28 @@ public class ChatGptService {
                 return objectMapper.writeValueAsString(originalResponse);
             }
 
-            JsonNode jsonNode = objectMapper.readTree(originalResponse);
-            String content = extractContent(jsonNode);
-            String finishReason = extractFinishReason(jsonNode);
-
+            String content = extractContent(originalResponse);
             messageRequestDto.addContent(content);
-            if (isFinalResponse(finishReason)) {
-                // TODO 답변 저장 로직 추가
-                log.info("Save Message: {}", messageRequestDto);
-            }
-            return objectMapper.writeValueAsString(ChatGptResponseDto.of(chatId, content, finishReason));
+            return objectMapper.writeValueAsString(ChatGptResponseDto.of(chatId, content));
         } catch (JsonProcessingException ex) {
             log.error("[ERROR] {} : {}", ex.getClass(), ex.getMessage(), ex);
             return null;
         }
     }
 
-    private String extractContent(JsonNode jsonNode) {
+    private String extractContent(String response) throws JsonProcessingException {
+        JsonNode jsonNode = objectMapper.readTree(response);
         JsonNode contentNode = jsonNode.path("choices").get(0).path("delta").path("content");
         return contentNode.isMissingNode() ? "" : contentNode.asText();
-    }
-
-    private String extractFinishReason(JsonNode jsonNode) {
-        JsonNode reasonNode = jsonNode.path("choices").get(0).path("finish_reason");
-        return reasonNode.isNull() ? "proceeding" : reasonNode.asText();
-    }
-
-    private boolean isFinalResponse(String finishReason) {
-        return "stop".equals(finishReason) || "length".equals(finishReason);
     }
 
     private Flux<String> handleWebClientException(WebClientResponseException ex) {
         log.error("[ERROR] {} : {}", ex.getClass(), ex.getMessage(), ex);
         return Flux.error(new GeneralException(ErrorCode.CHAT_API_EXCEPTION));
+    }
+
+    private void saveMessageContent(MessageRequestDto messageRequestDto) {
+        log.info("Saving message content: {}", messageRequestDto.getContent());
+        // TODO: Implement actual save logic here
     }
 }
