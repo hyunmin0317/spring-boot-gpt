@@ -20,4 +20,9 @@ public class ChatService {
         Chat chat = requestDto.toEntity();
         return ChatResponseDto.from(chatRepository.save(chat));
     }
+
+    @Transactional
+    public String getOrCreateChatId(ChatRequestDto requestDto) {
+        return requestDto.chatId() != null ? requestDto.chatId() : createChat(requestDto).id();
+    }
 }

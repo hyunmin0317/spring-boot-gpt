@@ -3,8 +3,8 @@ package com.hyunmin.gpt.domain.chat.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hyunmin.gpt.domain.chat.dto.ChatGptRequestDto;
 import com.hyunmin.gpt.domain.chat.dto.ChatGptResponseDto;
-import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
 import com.hyunmin.gpt.domain.chat.dto.MessageRequestDto;
 import com.hyunmin.gpt.global.exception.GeneralException;
 import com.hyunmin.gpt.global.exception.code.ErrorCode;
@@ -27,11 +27,11 @@ public class ChatGptService {
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
 
-    public Flux<String> streamChat(String chatId, ChatRequestDto request) {
+    public Flux<String> streamChat(String chatId, ChatGptRequestDto request) {
         MessageRequestDto messageRequestDto = MessageRequestDto.from(chatId);
 
         return webClient.post()
-                .bodyValue(request.toRequest())
+                .bodyValue(request)
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchangeToFlux(response -> handleResponse(response, chatId, messageRequestDto))
                 .onErrorResume(WebClientResponseException.class, this::handleWebClientException);

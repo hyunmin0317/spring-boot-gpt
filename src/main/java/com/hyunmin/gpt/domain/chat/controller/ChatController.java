@@ -22,9 +22,9 @@ public class ChatController {
     private final ChatGptService chatGptService;
 
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<Flux<String>> streamChat(@RequestBody @Valid ChatRequestDto request) {
-        String chatId = request.chatId() != null ? request.chatId() : chatService.createChat(request).id();
-        Flux<String> responseFlux = chatGptService.streamChat(chatId, request);
+    public ResponseEntity<Flux<String>> streamChat(@RequestBody @Valid ChatRequestDto requestDto) {
+        String chatId = chatService.getOrCreateChatId(requestDto);
+        Flux<String> responseFlux = chatGptService.streamChat(chatId, requestDto.toRequest());
         return ResponseEntity.ok()
                 .header("X-Accel-Buffering", "no")
                 .body(responseFlux);
