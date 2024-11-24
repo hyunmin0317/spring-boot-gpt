@@ -1,6 +1,7 @@
 package com.hyunmin.gpt.domain.chat.controller;
 
 import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
+import com.hyunmin.gpt.domain.chat.service.ChatGptService;
 import com.hyunmin.gpt.domain.chat.service.ChatService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,12 @@ import reactor.core.publisher.Flux;
 public class ChatController {
 
     private final ChatService chatService;
+    private final ChatGptService chatGptService;
 
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<Flux<String>> streamChat(@RequestBody @Valid ChatRequestDto request) {
-        Flux<String> responseFlux = chatService.streamChat(request);
+    public ResponseEntity<Flux<String>> streamChat(@RequestBody @Valid ChatRequestDto requestDto) {
+        String chatId = chatService.getOrCreateChatId(requestDto);
+        Flux<String> responseFlux = chatGptService.streamChat(chatId, requestDto.toRequest());
         return ResponseEntity.ok()
                 .header("X-Accel-Buffering", "no")
                 .body(responseFlux);
