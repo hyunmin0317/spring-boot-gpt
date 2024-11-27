@@ -3,6 +3,7 @@ package com.hyunmin.gpt.domain.chat.controller;
 import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
 import com.hyunmin.gpt.domain.chat.service.ChatGptService;
 import com.hyunmin.gpt.domain.chat.service.ChatService;
+import com.hyunmin.gpt.global.security.annotation.AuthMember;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -22,8 +23,8 @@ public class ChatController {
     private final ChatGptService chatGptService;
 
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<Flux<String>> streamChat(@RequestBody @Valid ChatRequestDto requestDto) {
-        String chatId = chatService.getOrCreateChatId(requestDto);
+    public ResponseEntity<Flux<String>> streamChat(@AuthMember Long memberId, @RequestBody @Valid ChatRequestDto requestDto) {
+        String chatId = chatService.getOrCreateChatId(memberId, requestDto);
         Flux<String> responseFlux = chatGptService.streamChat(chatId, requestDto);
         return ResponseEntity.ok()
                 .header("X-Accel-Buffering", "no")

@@ -27,8 +27,8 @@ import java.util.Objects;
 public class ChatGptService {
 
     private final WebClient webClient;
-    private final ObjectMapper objectMapper;
     private final MessageService messageService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Flux<String> streamChat(String chatId, ChatRequestDto request) {
         MessageRequestDto userMessage = MessageRequestDto.of(chatId, Role.user, request.content());

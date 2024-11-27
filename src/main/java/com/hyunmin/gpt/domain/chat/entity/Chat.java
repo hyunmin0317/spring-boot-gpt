@@ -2,6 +2,7 @@ package com.hyunmin.gpt.domain.chat.entity;
 
 import com.hyunmin.gpt.domain.message.entity.Message;
 import com.hyunmin.gpt.global.common.entity.BaseEntity;
+import com.hyunmin.gpt.global.common.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,15 @@ public class Chat extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Message> messages = new ArrayList<>();
+
+    public void setMember(Member member) {
+        this.member = member;
+        member.getChats().add(this);
+    }
 }
