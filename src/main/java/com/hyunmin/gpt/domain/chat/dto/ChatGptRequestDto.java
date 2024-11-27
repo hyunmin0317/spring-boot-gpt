@@ -1,5 +1,6 @@
 package com.hyunmin.gpt.domain.chat.dto;
 
+import com.hyunmin.gpt.domain.message.entity.enums.Role;
 import lombok.Builder;
 
 import java.util.List;
@@ -12,9 +13,9 @@ public record ChatGptRequestDto(
 ) {
 
     @Builder
-    public record Message(String role, String content) {
+    public record Message(Role role, String content) {
 
-        public static Message from(String role, String content) {
+        public static Message of(Role role, String content) {
             return Message.builder()
                     .role(role)
                     .content(content)

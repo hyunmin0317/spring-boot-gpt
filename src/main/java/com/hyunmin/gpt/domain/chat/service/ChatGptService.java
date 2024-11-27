@@ -3,9 +3,11 @@ package com.hyunmin.gpt.domain.chat.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hyunmin.gpt.domain.chat.dto.ChatGptRequestDto;
 import com.hyunmin.gpt.domain.chat.dto.ChatGptResponseDto;
-import com.hyunmin.gpt.domain.chat.dto.MessageRequestDto;
+import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
+import com.hyunmin.gpt.domain.message.dto.MessageRequestDto;
+import com.hyunmin.gpt.domain.message.entity.enums.Role;
+import com.hyunmin.gpt.domain.message.service.MessageService;
 import com.hyunmin.gpt.global.exception.GeneralException;
 import com.hyunmin.gpt.global.exception.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -26,22 +28,24 @@ public class ChatGptService {
 
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
+    private final MessageService messageService;
 
-    public Flux<String> streamChat(String chatId, ChatGptRequestDto request) {
-        MessageRequestDto messageRequestDto = MessageRequestDto.from(chatId);
+    public Flux<String> streamChat(String chatId, ChatRequestDto request) {
+        MessageRequestDto userMessage = MessageRequestDto.of(chatId, Role.user, request.content());
+        MessageRequestDto assistantMessage = MessageRequestDto.of(chatId, Role.assistant, "");
 
         return webClient.post()
-                .bodyValue(request)
+                .bodyValue(request.toGptRequest())
                 .accept(MediaType.TEXT_EVENT_STREAM)
-                .exchangeToFlux(response -> handleResponse(response, chatId, messageRequestDto))
+                .exchangeToFlux(response -> handleResponse(response, chatId, assistantMessage))
                 .onErrorResume(WebClientResponseException.class, this::handleWebClientException)
-                .doOnComplete(() -> saveMessageContent(messageRequestDto));
+                .doOnComplete(() -> saveMessageContent(userMessage, assistantMessage));
     }
 
-    private Flux<String> handleResponse(ClientResponse response, String chatId, MessageRequestDto messageRequestDto) {
+    private Flux<String> handleResponse(ClientResponse response, String chatId, MessageRequestDto assistantMessage) {
         if (response.statusCode().is2xxSuccessful()) {
             return response.bodyToFlux(String.class)
-                    .mapNotNull(originalResponse -> processResponse(originalResponse, chatId, messageRequestDto))
+                    .mapNotNull(originalResponse -> processResponse(originalResponse, chatId, assistantMessage))
                     .filter(Objects::nonNull);
         } else {
             log.error("[ERROR] {} : {}", "GPT API response statusCode", response.statusCode());
@@ -75,8 +79,8 @@ public class ChatGptService {
         return Flux.error(new GeneralException(ErrorCode.CHAT_API_EXCEPTION));
     }
 
-    private void saveMessageContent(MessageRequestDto messageRequestDto) {
-        log.info("Saving message content: {}", messageRequestDto.getContent());
-        // TODO: Implement actual save logic here
+    private void saveMessageContent(MessageRequestDto userMessage, MessageRequestDto assistantMessage) {
+        messageService.saveMessage(userMessage);
+        messageService.saveMessage(assistantMessage);
     }
 }
