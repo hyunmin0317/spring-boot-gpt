@@ -1,8 +1,12 @@
 package com.hyunmin.gpt.global.common.entity;
 
+import com.hyunmin.gpt.domain.chat.entity.Chat;
 import com.hyunmin.gpt.global.common.entity.enums.MemberRole;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,6 +29,9 @@ public class Member extends BaseEntity {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private MemberRole role = MemberRole.ROLE_USER;
+
+    @OneToMany(mappedBy = "messages", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Chat> chats = new ArrayList<>();
 
     public void changePassword(String password) {
         this.password = password;

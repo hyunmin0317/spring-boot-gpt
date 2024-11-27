@@ -30,4 +30,9 @@ public class Chat extends BaseEntity {
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Message> messages = new ArrayList<>();
+
+    public void setMember(Member member) {
+        this.member = member;
+        member.getChats().add(this);
+    }
 }
