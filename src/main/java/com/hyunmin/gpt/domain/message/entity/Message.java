@@ -26,4 +26,9 @@ public class Message extends BaseEntity {
     private Role role;
 
     private String content;
+
+    private void setChat(Chat chat) {
+        this.chat = chat;
+        chat.getMessages().add(this);
+    }
 }
