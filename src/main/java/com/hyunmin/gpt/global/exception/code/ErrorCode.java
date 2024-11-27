@@ -38,7 +38,10 @@ public enum ErrorCode {
 
     // GPT Errors
     CHAT_GPT_EXCEPTION(500, "GPT001", "ChatGPT 서비스가 일시적으로 응답하지 않습니다. 잠시 후 다시 시도해주세요."),
-    CHAT_API_EXCEPTION(500, "GPT002", "ChatGPT API 호출 중 오류가 발생했습니다. 관리자에게 문의하세요.");
+    CHAT_API_EXCEPTION(500, "GPT002", "ChatGPT API 호출 중 오류가 발생했습니다. 관리자에게 문의하세요."),
+
+    // Chat Errors
+    CHAT_NOT_FOUND(404, "CHAT001", "해당 질문 세션을 찾을 수 없습니다.");
 
     private final int value;
     private final String code;

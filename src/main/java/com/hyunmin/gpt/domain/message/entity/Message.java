@@ -25,9 +25,10 @@ public class Message extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    @Lob
     private String content;
 
-    private void setChat(Chat chat) {
+    public void setChat(Chat chat) {
         this.chat = chat;
         chat.getMessages().add(this);
     }
