@@ -1,4 +1,4 @@
-package com.hyunmin.gpt.domain.chat.dto;
+package com.hyunmin.gpt.domain.message.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
