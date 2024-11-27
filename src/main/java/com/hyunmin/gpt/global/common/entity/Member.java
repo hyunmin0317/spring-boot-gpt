@@ -30,7 +30,7 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role = MemberRole.ROLE_USER;
 
-    @OneToMany(mappedBy = "messages", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Chat> chats = new ArrayList<>();
 
     public void changePassword(String password) {
