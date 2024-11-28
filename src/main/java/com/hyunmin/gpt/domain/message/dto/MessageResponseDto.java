@@ -3,6 +3,7 @@ package com.hyunmin.gpt.domain.message.dto;
 import com.hyunmin.gpt.domain.message.entity.Message;
 import com.hyunmin.gpt.domain.message.entity.enums.Role;
 import lombok.Builder;
+import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
 
@@ -25,5 +26,9 @@ public record MessageResponseDto(
                 .createdAt(message.getCreatedAt())
                 .updatedAt(message.getUpdatedAt())
                 .build();
+    }
+
+    public static Slice<MessageResponseDto> from(Slice<Message> messageSlice) {
+        return messageSlice.map(MessageResponseDto::from);
     }
 }

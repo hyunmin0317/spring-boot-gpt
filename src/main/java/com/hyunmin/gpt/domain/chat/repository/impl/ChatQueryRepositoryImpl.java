@@ -20,11 +20,11 @@ public class ChatQueryRepositoryImpl implements ChatQueryRepository {
 
     @Override
     public Slice<Chat> findAllChats(Long memberId, Pageable pageable) {
-        List<Chat> chats = fetchChatsByMember(memberId, pageable);
+        List<Chat> chats = fetchChatsByMemberId(memberId, pageable);
         return toSlice(chats, pageable);
     }
 
-    private List<Chat> fetchChatsByMember(Long memberId, Pageable pageable) {
+    private List<Chat> fetchChatsByMemberId(Long memberId, Pageable pageable) {
         return queryFactory.selectFrom(chat)
                 .where(memberIdEq(memberId))
                 .orderBy(chat.createdAt.desc())
