@@ -27,7 +27,7 @@ public class MessageQueryRepositoryImpl implements MessageQueryRepository {
     private List<Message> fetchMessagesByChatId(String chatId, Pageable pageable) {
         return queryFactory.selectFrom(message)
                 .where(chatIdEq(chatId))
-                .orderBy(message.createdAt.desc())
+                .orderBy(message.createdAt.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
