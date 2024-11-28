@@ -9,6 +9,8 @@ import com.hyunmin.gpt.domain.message.repository.MessageRepository;
 import com.hyunmin.gpt.global.exception.GeneralException;
 import com.hyunmin.gpt.global.exception.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,11 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final ChatRepository chatRepository;
+
+    public Slice<MessageResponseDto> readMessages(String chatId, Pageable pageable) {
+        Slice<Message> messageSlice = messageRepository.findAllMessages(chatId, pageable);
+        return MessageResponseDto.from(messageSlice);
+    }
 
     @Transactional
     public MessageResponseDto saveMessage(MessageRequestDto requestDto) {
