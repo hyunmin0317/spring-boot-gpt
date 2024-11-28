@@ -8,6 +8,7 @@ import com.hyunmin.gpt.global.security.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -49,10 +50,12 @@ public class SecurityConfig {
 
         // 경로별 인가 작업
         http.authorizeHttpRequests(authorize -> authorize
-                // H2 콘솔과 Swagger UI 및 API 문서에 대한 접근 허용
-                .requestMatchers("/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                // API 계정 관련 요청에 대한 접근 허용
-                .requestMatchers("/api/v1/accounts/**", "/actuator/info").permitAll()
+                // H2 콘솔, Swagger UI, API 문서, Actuator 정보 조회에 대한 모든 접근 허용
+                .requestMatchers("/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/info").permitAll()
+                // 계정 관련 API 요청에 대한 모든 접근 허용
+                .requestMatchers("/api/v1/accounts/**").permitAll()
+                // 채팅 API 요청에 대한 모든 접근 허용 (POST)
+                .requestMatchers(HttpMethod.POST, "/api/v1/chat").permitAll()
                 // 전체 사용자 정보 조회 API 관리자 권한만 접근 허용
                 .requestMatchers("/api/v1/members").hasRole("ADMIN")
                 // 나머지 모든 요청은 인증 필요

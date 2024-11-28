@@ -35,10 +35,12 @@ public class ChatService {
 
     @Transactional
     public ChatResponseDto createChat(Long memberId, ChatRequestDto requestDto) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new GeneralException(ErrorCode.ACCOUNT_NOT_FOUND));
         Chat chat = requestDto.toEntity();
-        chat.setMember(member);
+        if (memberId != null) {
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new GeneralException(ErrorCode.ACCOUNT_NOT_FOUND));
+            chat.setMember(member);
+        }
         return ChatResponseDto.from(chatRepository.save(chat));
     }
 
