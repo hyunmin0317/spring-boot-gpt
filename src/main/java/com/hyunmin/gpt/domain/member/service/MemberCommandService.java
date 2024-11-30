@@ -27,6 +27,7 @@ public class MemberCommandService {
     }
 
     public void deleteMember(Long id) {
-        memberRepository.deleteById(id);
+        Member member = memberRepository.findById(id).orElseThrow(() -> new GeneralException(ErrorCode.MEMBER_NOT_FOUND));
+        memberRepository.delete(member);
     }
 }
