@@ -29,6 +29,12 @@ public class ChatController {
     private final ChatGptService chatGptService;
     private final MessageQueryService messageQueryService;
 
+    @GetMapping
+    public ResponseEntity<Slice<ChatResponseDto>> readChats(@AuthMember Long memberId, @ParameterObject Pageable pageable) {
+        Slice<ChatResponseDto> responseDtoSlice = chatQueryService.readChats(memberId, pageable);
+        return ResponseEntity.ok(responseDtoSlice);
+    }
+
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<Flux<String>> streamChat(@AuthMember Long memberId, @RequestBody @Valid ChatRequestDto requestDto) {
         String chatId = chatCommandService.getOrCreateChatId(memberId, requestDto);
@@ -37,12 +43,6 @@ public class ChatController {
         return ResponseEntity.ok()
                 .header("X-Accel-Buffering", "no")
                 .body(responseFlux);
-    }
-
-    @GetMapping
-    public ResponseEntity<Slice<ChatResponseDto>> readChats(@AuthMember Long memberId, @ParameterObject Pageable pageable) {
-        Slice<ChatResponseDto> responseDtoSlice = chatQueryService.readChats(memberId, pageable);
-        return ResponseEntity.ok(responseDtoSlice);
     }
 
     @GetMapping("/{chatId}")

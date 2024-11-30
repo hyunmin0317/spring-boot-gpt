@@ -22,16 +22,6 @@ public class ChatCommandService {
     private final ChatRepository chatRepository;
     private final MemberRepository memberRepository;
 
-    public ChatResponseDto createChat(Long memberId, ChatRequestDto requestDto) {
-        Chat chat = requestDto.toEntity();
-        if (memberId != null) {
-            Member member = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new GeneralException(ErrorCode.ACCOUNT_NOT_FOUND));
-            chat.setMember(member);
-        }
-        return ChatResponseDto.from(chatRepository.save(chat));
-    }
-
     public String getOrCreateChatId(Long memberId, ChatRequestDto requestDto) {
         return requestDto.chatId() != null ?
                 chatQueryService.readChat(memberId, requestDto.chatId()).id() :
@@ -49,5 +39,15 @@ public class ChatCommandService {
         Chat chat = chatRepository.findByIdAndMemberId(chatId, memberId)
                 .orElseThrow(() -> new GeneralException(ErrorCode.CHAT_NOT_FOUND));
         chatRepository.delete(chat);
+    }
+
+    private ChatResponseDto createChat(Long memberId, ChatRequestDto requestDto) {
+        Chat chat = requestDto.toEntity();
+        if (memberId != null) {
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new GeneralException(ErrorCode.ACCOUNT_NOT_FOUND));
+            chat.setMember(member);
+        }
+        return ChatResponseDto.from(chatRepository.save(chat));
     }
 }
