@@ -1,7 +1,7 @@
 package com.hyunmin.gpt.domain.message.controller;
 
 import com.hyunmin.gpt.domain.message.dto.MessageResponseDto;
-import com.hyunmin.gpt.domain.message.service.MessageService;
+import com.hyunmin.gpt.domain.message.service.MessageQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/chat/{chatId}/messages")
 public class MessageController {
 
-    private final MessageService messageService;
+    private final MessageQueryService messageQueryService;
 
     @GetMapping
     public ResponseEntity<Slice<MessageResponseDto>> readMessages(@PathVariable String chatId, @ParameterObject Pageable pageable) {
-        Slice<MessageResponseDto> responseDtoSlice = messageService.readMessages(chatId, pageable);
+        Slice<MessageResponseDto> responseDtoSlice = messageQueryService.readMessages(chatId, pageable);
         return ResponseEntity.ok(responseDtoSlice);
     }
 }

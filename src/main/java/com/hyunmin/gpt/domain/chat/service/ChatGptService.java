@@ -7,7 +7,7 @@ import com.hyunmin.gpt.domain.chat.dto.ChatGptRequestDto;
 import com.hyunmin.gpt.domain.chat.dto.ChatGptResponseDto;
 import com.hyunmin.gpt.domain.message.dto.MessageRequestDto;
 import com.hyunmin.gpt.domain.message.entity.enums.Role;
-import com.hyunmin.gpt.domain.message.service.MessageService;
+import com.hyunmin.gpt.domain.message.service.MessageCommandService;
 import com.hyunmin.gpt.global.exception.GeneralException;
 import com.hyunmin.gpt.global.exception.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import java.util.Objects;
 public class ChatGptService {
 
     private final WebClient webClient;
-    private final MessageService messageService;
+    private final MessageCommandService messageCommandService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Flux<String> streamChat(String chatId, ChatGptRequestDto requestDto, String content) {
@@ -80,7 +80,7 @@ public class ChatGptService {
     }
 
     private void saveMessageContent(MessageRequestDto userMessage, MessageRequestDto assistantMessage) {
-        messageService.saveMessage(userMessage);
-        messageService.saveMessage(assistantMessage);
+        messageCommandService.saveMessage(userMessage);
+        messageCommandService.saveMessage(assistantMessage);
     }
 }
