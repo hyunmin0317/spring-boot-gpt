@@ -3,8 +3,8 @@ package com.hyunmin.gpt.domain.chat.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hyunmin.gpt.domain.chat.dto.ChatGptRequestDto;
 import com.hyunmin.gpt.domain.chat.dto.ChatGptResponseDto;
-import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
 import com.hyunmin.gpt.domain.message.dto.MessageRequestDto;
 import com.hyunmin.gpt.domain.message.entity.enums.Role;
 import com.hyunmin.gpt.domain.message.service.MessageService;
@@ -30,12 +30,12 @@ public class ChatGptService {
     private final MessageService messageService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Flux<String> streamChat(String chatId, ChatRequestDto request) {
-        MessageRequestDto userMessage = MessageRequestDto.of(chatId, Role.user, request.content());
+    public Flux<String> streamChat(String chatId, ChatGptRequestDto requestDto, String content) {
+        MessageRequestDto userMessage = MessageRequestDto.of(chatId, Role.user, content);
         MessageRequestDto assistantMessage = MessageRequestDto.of(chatId, Role.assistant, "");
 
         return webClient.post()
-                .bodyValue(request.toGptRequest())
+                .bodyValue(requestDto)
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchangeToFlux(response -> handleResponse(response, chatId, assistantMessage))
                 .onErrorResume(WebClientResponseException.class, this::handleWebClientException)
