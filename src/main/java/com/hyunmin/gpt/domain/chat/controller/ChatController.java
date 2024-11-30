@@ -43,4 +43,10 @@ public class ChatController {
         Slice<ChatResponseDto> responseDtoSlice = chatQueryService.readChats(memberId, pageable);
         return ResponseEntity.ok(responseDtoSlice);
     }
+
+    @GetMapping("/{chatId}")
+    public ResponseEntity<ChatResponseDto> readChat(@AuthMember Long memberId, @PathVariable String chatId) {
+        ChatResponseDto responseDto = chatQueryService.readChat(memberId, chatId);
+        return ResponseEntity.ok(responseDto);
+    }
 }
