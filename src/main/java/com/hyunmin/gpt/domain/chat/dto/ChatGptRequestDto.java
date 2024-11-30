@@ -32,8 +32,9 @@ public record ChatGptRequestDto(
         }
 
         private static List<MessageDto> from(List<Message> messageList) {
-            return messageList.isEmpty() ?
-                    new ArrayList<>() : messageList.stream().map(MessageDto::from).toList();
+            return messageList.stream()
+                    .map(MessageDto::from)
+                    .toList();
         }
 
         private static List<MessageDto> from(List<Message> messageList, String content) {
