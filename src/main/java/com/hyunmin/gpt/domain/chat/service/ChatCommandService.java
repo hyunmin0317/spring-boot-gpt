@@ -2,6 +2,7 @@ package com.hyunmin.gpt.domain.chat.service;
 
 import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
 import com.hyunmin.gpt.domain.chat.dto.ChatResponseDto;
+import com.hyunmin.gpt.domain.chat.dto.ChatUpdateRequestDto;
 import com.hyunmin.gpt.domain.chat.entity.Chat;
 import com.hyunmin.gpt.domain.chat.repository.ChatRepository;
 import com.hyunmin.gpt.global.common.entity.Member;
@@ -35,5 +36,12 @@ public class ChatCommandService {
         return requestDto.chatId() != null ?
                 chatQueryService.readChat(memberId, requestDto.chatId()).id() :
                 createChat(memberId, requestDto).id();
+    }
+
+    public ChatResponseDto updateChat(Long memberId, String chatId, ChatUpdateRequestDto requestDto) {
+        Chat chat = chatRepository.findByIdAndMemberId(chatId, memberId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.CHAT_NOT_FOUND));
+        chat.update(requestDto.name());
+        return ChatResponseDto.from(chat);
     }
 }

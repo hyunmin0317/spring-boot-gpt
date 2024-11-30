@@ -3,6 +3,7 @@ package com.hyunmin.gpt.domain.chat.controller;
 import com.hyunmin.gpt.domain.chat.dto.ChatGptRequestDto;
 import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
 import com.hyunmin.gpt.domain.chat.dto.ChatResponseDto;
+import com.hyunmin.gpt.domain.chat.dto.ChatUpdateRequestDto;
 import com.hyunmin.gpt.domain.chat.service.ChatCommandService;
 import com.hyunmin.gpt.domain.chat.service.ChatGptService;
 import com.hyunmin.gpt.domain.chat.service.ChatQueryService;
@@ -47,6 +48,13 @@ public class ChatController {
     @GetMapping("/{chatId}")
     public ResponseEntity<ChatResponseDto> readChat(@AuthMember Long memberId, @PathVariable String chatId) {
         ChatResponseDto responseDto = chatQueryService.readChat(memberId, chatId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/{chatId}")
+    public ResponseEntity<ChatResponseDto> updateChat(@AuthMember Long memberId, @PathVariable String chatId,
+                                                      @RequestBody @Valid ChatUpdateRequestDto requestDto) {
+        ChatResponseDto responseDto = chatCommandService.updateChat(memberId, chatId, requestDto);
         return ResponseEntity.ok(responseDto);
     }
 }
