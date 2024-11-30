@@ -30,7 +30,7 @@ public class MessageService {
         return MessageResponseDto.from(messageSlice);
     }
 
-    public ChatGptRequestDto readMessages(String chatId, String content) {
+    public ChatGptRequestDto readMessagesForChatGpt(String chatId, String content) {
         List<Message> messageList = messageRepository.findAllByChatId(chatId);
         return ChatGptRequestDto.from(messageList, content);
     }

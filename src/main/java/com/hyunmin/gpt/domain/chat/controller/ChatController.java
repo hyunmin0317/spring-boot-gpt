@@ -29,8 +29,8 @@ public class ChatController {
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<Flux<String>> streamChat(@AuthMember Long memberId, @RequestBody @Valid ChatRequestDto requestDto) {
         String chatId = chatService.getOrCreateChatId(memberId, requestDto);
-        ChatGptRequestDto chatGptRequestDto = messageService.readMessages(chatId, requestDto.content());
-        Flux<String> responseFlux = chatGptService.streamChat(chatId, chatGptRequestDto, requestDto.content());
+        ChatGptRequestDto gptRequestDto = messageService.readMessagesForChatGpt(chatId, requestDto.content());
+        Flux<String> responseFlux = chatGptService.streamChat(chatId, gptRequestDto, requestDto.content());
         return ResponseEntity.ok()
                 .header("X-Accel-Buffering", "no")
                 .body(responseFlux);
