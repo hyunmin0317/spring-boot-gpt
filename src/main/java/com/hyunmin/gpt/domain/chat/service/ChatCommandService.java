@@ -2,6 +2,7 @@ package com.hyunmin.gpt.domain.chat.service;
 
 import com.hyunmin.gpt.domain.chat.dto.ChatRequestDto;
 import com.hyunmin.gpt.domain.chat.dto.ChatResponseDto;
+import com.hyunmin.gpt.domain.chat.dto.ChatUpdateRequestDto;
 import com.hyunmin.gpt.domain.chat.entity.Chat;
 import com.hyunmin.gpt.domain.chat.repository.ChatRepository;
 import com.hyunmin.gpt.global.common.entity.Member;
@@ -21,7 +22,26 @@ public class ChatCommandService {
     private final ChatRepository chatRepository;
     private final MemberRepository memberRepository;
 
-    public ChatResponseDto createChat(Long memberId, ChatRequestDto requestDto) {
+    public String getOrCreateChatId(Long memberId, ChatRequestDto requestDto) {
+        return requestDto.chatId() != null ?
+                chatQueryService.readChat(memberId, requestDto.chatId()).id() :
+                createChat(memberId, requestDto).id();
+    }
+
+    public ChatResponseDto updateChat(Long memberId, String chatId, ChatUpdateRequestDto requestDto) {
+        Chat chat = chatRepository.findByIdAndMemberId(chatId, memberId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.CHAT_NOT_FOUND));
+        chat.update(requestDto.name());
+        return ChatResponseDto.from(chat);
+    }
+
+    public void deleteChat(Long memberId, String chatId) {
+        Chat chat = chatRepository.findByIdAndMemberId(chatId, memberId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.CHAT_NOT_FOUND));
+        chatRepository.delete(chat);
+    }
+
+    private ChatResponseDto createChat(Long memberId, ChatRequestDto requestDto) {
         Chat chat = requestDto.toEntity();
         if (memberId != null) {
             Member member = memberRepository.findById(memberId)
@@ -29,11 +49,5 @@ public class ChatCommandService {
             chat.setMember(member);
         }
         return ChatResponseDto.from(chatRepository.save(chat));
-    }
-
-    public String getOrCreateChatId(Long memberId, ChatRequestDto requestDto) {
-        return requestDto.chatId() != null ?
-                chatQueryService.readChat(memberId, requestDto.chatId()).id() :
-                createChat(memberId, requestDto).id();
     }
 }

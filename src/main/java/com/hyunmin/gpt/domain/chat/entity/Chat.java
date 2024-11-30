@@ -35,4 +35,8 @@ public class Chat extends BaseEntity {
         this.member = member;
         member.getChats().add(this);
     }
+
+    public void update(String name) {
+        this.name = name;
+    }
 }
