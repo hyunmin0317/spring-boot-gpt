@@ -44,4 +44,10 @@ public class ChatCommandService {
         chat.update(requestDto.name());
         return ChatResponseDto.from(chat);
     }
+
+    public void deleteChat(Long memberId, String chatId) {
+        Chat chat = chatRepository.findByIdAndMemberId(chatId, memberId)
+                .orElseThrow(() -> new GeneralException(ErrorCode.CHAT_NOT_FOUND));
+        chatRepository.delete(chat);
+    }
 }

@@ -57,4 +57,10 @@ public class ChatController {
         ChatResponseDto responseDto = chatCommandService.updateChat(memberId, chatId, requestDto);
         return ResponseEntity.ok(responseDto);
     }
+
+    @DeleteMapping("/{chatId}")
+    public ResponseEntity<Void> deleteChat(@AuthMember Long memberId, @PathVariable String chatId) {
+        chatCommandService.deleteChat(memberId, chatId);
+        return ResponseEntity.noContent().build();
+    }
 }
