@@ -13,6 +13,7 @@ public enum ErrorCode {
     UNAUTHORIZED(401, "COMMON002", "로그인이 필요합니다."),
     METHOD_NOT_ALLOWED(405, "COMMON003", "지원하지 않는 Http Method 입니다."),
     FORBIDDEN(403, "COMMON004", "금지된 요청입니다."),
+    INVALID_ENUM_VALUE(400, "COMMON005", "잘못된 요청 값입니다."),
 
     // Validation Errors
     VALIDATION_FAILED(400, "VALID001", "입력값에 대한 검증에 실패했습니다."),
@@ -31,10 +32,6 @@ public enum ErrorCode {
     // Member Errors
     MEMBER_FORBIDDEN(403, "MEMBER001", "사용자 권한이 없습니다."),
     MEMBER_NOT_FOUND(404, "MEMBER002", "해당 사용자가 없습니다."),
-
-    // Redis Errors
-    REDIS_CONNECTION_FAILURE(500, "REDIS001", "Redis 서버에 연결할 수 없습니다."),
-    REDIS_SYSTEM_EXCEPTION(500, "REDIS002", "Redis 시스템 예외가 발생했습니다."),
 
     // GPT Errors
     CHAT_GPT_EXCEPTION(500, "GPT001", "ChatGPT 서비스가 일시적으로 응답하지 않습니다. 잠시 후 다시 시도해주세요."),
