@@ -6,14 +6,13 @@ import com.hyunmin.gpt.global.exception.code.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.redis.RedisConnectionFailureException;
-import org.springframework.data.redis.RedisSystemException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.Map;
 import java.util.Objects;
@@ -62,20 +61,11 @@ public class GeneralExceptionHandler {
         return ErrorResponse.handle(errorCode);
     }
 
-    // Redis 서버 연결 실패(RedisConnectionFailureException) 처리 메서드
-    @ExceptionHandler(RedisConnectionFailureException.class)
-    protected ResponseEntity<ErrorResponse<Void>> handleRedisConnectionFailureException(RedisConnectionFailureException ex) {
+    // 메서드 인자 타입 불일치(MethodArgumentTypeMismatchException) 처리 메서드
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<ErrorResponse<Void>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         log.warn("[WARNING] {} : {}", ex.getClass(), ex.getMessage());
-        ErrorCode errorCode = ErrorCode.REDIS_CONNECTION_FAILURE;
-        return ErrorResponse.handle(errorCode);
-    }
-
-    // Redis 서버 오류(REDIS_SYSTEM_EXCEPTION) 처리 메서드
-    @ExceptionHandler(RedisSystemException.class)
-    protected ResponseEntity<ErrorResponse<Void>> handleRedisSystemException(RedisSystemException ex) {
-        log.warn("[WARNING] {} : {}", ex.getClass(), ex.getMessage());
-        ErrorCode errorCode = ErrorCode.REDIS_SYSTEM_EXCEPTION;
-        return ErrorResponse.handle(errorCode);
+        return ErrorResponse.handle(ErrorCode.INVALID_ENUM_VALUE);
     }
 
     // 기타 모든 예외(Exception) 처리 메서드
